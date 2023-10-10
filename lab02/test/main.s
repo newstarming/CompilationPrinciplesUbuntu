@@ -1,8 +1,5 @@
   .arch armv7-a @处理器架构
-  .arm
-@r0是格式化字符串，r1是对应的printf对应的第二个参数
-@代码段
-@主函数
+  .arm @r0是格式化字符串，r1是对应的printf对应的第二个参数
   .text @代码段
   .global main
   .type main, %function
