@@ -1,0 +1,21 @@
+int yyparse()
+{
+    while (1) {
+        yyparse_internal(); // 调用 Bison 自动生成的语法分析函数
+        
+        // 在语法分析结束后等待用户输入分号或其他结束标志
+        printf("Enter a semicolon ';' to continue or 'q' to quit: ");
+        int t = getchar();
+        if (t == 'q') {
+            break; // 用户输入 'q' 退出程序
+        } else if (t == ';') {
+            // 用户输入分号，继续解析下一个表达式
+            printf("Input an expression: ");
+            continue;
+        } else {
+            // 用户输入其他字符，继续等待
+            continue;
+        }
+    }
+    return 0;
+}
