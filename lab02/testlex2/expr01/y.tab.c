@@ -69,25 +69,26 @@
 /* First part of user prologue.  */
 #line 1 "LexRuler.y"
 
-/*********************************************
-将所有的词法分析功能均放在 yylex 函数内实现，为 +、-、*、\、(、 ) 每个运算符及整数分别定义一个单词类别，在 yylex 内实现代码，能
-识别这些单词，并将单词类别返回给词法分析程序。
-实现功能更强的词法分析程序，可识别并忽略空格、制表符、回车等
-空白符，能识别多位十进制整数。
-YACC file
-**********************************************/
+// 简单表达式计算
+// basic：将所有的词法分析功能均放在yylex函数内实现
+// 为+、-.*、\、(、)每个运算符及整数分别定义一个单词类别
+// 在yylex内实现代码，能识别这些单词，并将单词类别返回给词法分析程序
+// 可识别并忽略空格、制表符、回车等空白符
+// 能识别多位十进制整数
 #include<stdio.h>
 #include<stdlib.h>
 #include<ctype.h>
 #ifndef YYSTYPE
+// 定义 YYSTYPE 为 double，意味着yacc产生的值是双精度浮点数
 #define YYSTYPE double
 #endif
-int yylex();
-extern int yyparse();
+extern YYSTYPE yylval; 
+int yylex(); // 自行定义yylex函数
+extern int yyparse(); 
 FILE* yyin;
 void yyerror(const char* s);
 
-#line 91 "y.tab.c"
+#line 92 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -130,8 +131,12 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     ADD = 258,                     /* ADD  */
     MINUS = 259,                   /* MINUS  */
-    NUMBER = 260,                  /* NUMBER  */
-    UMINUS = 261                   /* UMINUS  */
+    MUL = 260,                     /* MUL  */
+    DIV = 261,                     /* DIV  */
+    UMINUS = 262,                  /* UMINUS  */
+    LEFT_PAREN = 263,              /* LEFT_PAREN  */
+    RIGHT_PAREN = 264,             /* RIGHT_PAREN  */
+    NUMBER = 265                   /* NUMBER  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -142,8 +147,12 @@ extern int yydebug;
 #define YYUNDEF 257
 #define ADD 258
 #define MINUS 259
-#define NUMBER 260
-#define UMINUS 261
+#define MUL 260
+#define DIV 261
+#define UMINUS 262
+#define LEFT_PAREN 263
+#define RIGHT_PAREN 264
+#define NUMBER 265
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -169,12 +178,16 @@ enum yysymbol_kind_t
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
   YYSYMBOL_ADD = 3,                        /* ADD  */
   YYSYMBOL_MINUS = 4,                      /* MINUS  */
-  YYSYMBOL_NUMBER = 5,                     /* NUMBER  */
-  YYSYMBOL_UMINUS = 6,                     /* UMINUS  */
-  YYSYMBOL_7_ = 7,                         /* ';'  */
-  YYSYMBOL_YYACCEPT = 8,                   /* $accept  */
-  YYSYMBOL_lines = 9,                      /* lines  */
-  YYSYMBOL_expr = 10                       /* expr  */
+  YYSYMBOL_MUL = 5,                        /* MUL  */
+  YYSYMBOL_DIV = 6,                        /* DIV  */
+  YYSYMBOL_UMINUS = 7,                     /* UMINUS  */
+  YYSYMBOL_LEFT_PAREN = 8,                 /* LEFT_PAREN  */
+  YYSYMBOL_RIGHT_PAREN = 9,                /* RIGHT_PAREN  */
+  YYSYMBOL_NUMBER = 10,                    /* NUMBER  */
+  YYSYMBOL_11_ = 11,                       /* ';'  */
+  YYSYMBOL_YYACCEPT = 12,                  /* $accept  */
+  YYSYMBOL_lines = 13,                     /* lines  */
+  YYSYMBOL_expr = 14                       /* expr  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -502,19 +515,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   13
+#define YYLAST   26
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  8
+#define YYNTOKENS  12
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  3
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  8
+#define YYNRULES  11
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  13
+#define YYNSTATES  20
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   261
+#define YYMAXUTOK   265
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -533,7 +546,7 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     7,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    11,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -554,14 +567,15 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6
+       5,     6,     7,     8,     9,    10
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    30,    30,    31,    32,    35,    36,    37,    38
+       0,    41,    41,    42,    43,    47,    48,    49,    50,    52,
+      53,    54
 };
 #endif
 
@@ -577,8 +591,9 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "\"end of file\"", "error", "\"invalid token\"", "ADD", "MINUS",
-  "NUMBER", "UMINUS", "';'", "$accept", "lines", "expr", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"", "ADD", "MINUS", "MUL",
+  "DIV", "UMINUS", "LEFT_PAREN", "RIGHT_PAREN", "NUMBER", "';'", "$accept",
+  "lines", "expr", YY_NULLPTR
 };
 
 static const char *
@@ -588,7 +603,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-4)
+#define YYPACT_NINF (-5)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -602,8 +617,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -4,     0,    -4,    -3,    -4,    -4,     6,    -4,    -3,    -3,
-      -4,    -4,    -4
+      -5,     0,    -5,    -1,    -1,    -5,    -5,    13,    -5,    17,
+      -1,    -1,    -1,    -1,    -5,    -5,    -4,    -4,    -5,    -5
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -611,20 +626,20 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       4,     0,     1,     0,     8,     3,     0,     7,     0,     0,
-       2,     5,     6
+       4,     0,     1,     0,     0,    11,     3,     0,     9,     0,
+       0,     0,     0,     0,     2,    10,     5,     6,     7,     8
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4,     3
+      -5,    -5,     2
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,     6
+       0,     1,     7
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -632,34 +647,38 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       2,     3,     4,     0,     3,     4,     7,     5,     0,     8,
-       9,    11,    12,    10
+       2,    12,    13,     3,     3,     8,     9,     4,     4,     5,
+       5,     6,    16,    17,    18,    19,    10,    11,    12,    13,
+      10,    11,    12,    13,    14,     0,    15
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     4,     5,    -1,     4,     5,     3,     7,    -1,     3,
-       4,     8,     9,     7
+       0,     5,     6,     4,     4,     3,     4,     8,     8,    10,
+      10,    11,    10,    11,    12,    13,     3,     4,     5,     6,
+       3,     4,     5,     6,    11,    -1,     9
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     9,     0,     4,     5,     7,    10,    10,     3,     4,
-       7,    10,    10
+       0,    13,     0,     4,     8,    10,    11,    14,    14,    14,
+       3,     4,     5,     6,    11,     9,    14,    14,    14,    14
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,     8,     9,     9,     9,    10,    10,    10,    10
+       0,    12,    13,    13,    13,    14,    14,    14,    14,    14,
+      14,    14
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     3,     2,     0,     3,     3,     2,     1
+       0,     2,     3,     2,     0,     3,     3,     3,     3,     2,
+       3,     1
 };
 
 
@@ -1123,37 +1142,55 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* lines: lines expr ';'  */
-#line 30 "LexRuler.y"
+#line 41 "LexRuler.y"
                                { printf("%f\n", yyvsp[-1]); }
-#line 1129 "y.tab.c"
+#line 1148 "y.tab.c"
     break;
 
   case 5: /* expr: expr ADD expr  */
-#line 35 "LexRuler.y"
-                                { yyval=yyvsp[-2]+yyvsp[0]; }
-#line 1135 "y.tab.c"
+#line 47 "LexRuler.y"
+                                { yyval = yyvsp[-2] + yyvsp[0]; }
+#line 1154 "y.tab.c"
     break;
 
   case 6: /* expr: expr MINUS expr  */
-#line 36 "LexRuler.y"
-                                  { yyval=yyvsp[-2]-yyvsp[0]; }
-#line 1141 "y.tab.c"
+#line 48 "LexRuler.y"
+                                  { yyval = yyvsp[-2] - yyvsp[0]; }
+#line 1160 "y.tab.c"
     break;
 
-  case 7: /* expr: MINUS expr  */
-#line 37 "LexRuler.y"
-                                          {yyval=-yyvsp[0];}
-#line 1147 "y.tab.c"
+  case 7: /* expr: expr MUL expr  */
+#line 49 "LexRuler.y"
+                                { yyval = yyvsp[-2] * yyvsp[0]; }
+#line 1166 "y.tab.c"
     break;
 
-  case 8: /* expr: NUMBER  */
-#line 38 "LexRuler.y"
-                        {yyval=yyvsp[0];}
-#line 1153 "y.tab.c"
+  case 8: /* expr: expr DIV expr  */
+#line 50 "LexRuler.y"
+                                { yyval = yyvsp[-2] / yyvsp[0]; }
+#line 1172 "y.tab.c"
+    break;
+
+  case 9: /* expr: MINUS expr  */
+#line 52 "LexRuler.y"
+                                          {yyval = - yyvsp[0];}
+#line 1178 "y.tab.c"
+    break;
+
+  case 10: /* expr: LEFT_PAREN expr RIGHT_PAREN  */
+#line 53 "LexRuler.y"
+                                            { yyval = yyvsp[-1]; }
+#line 1184 "y.tab.c"
+    break;
+
+  case 11: /* expr: NUMBER  */
+#line 54 "LexRuler.y"
+                        {yyval = yyvsp[0];}
+#line 1190 "y.tab.c"
     break;
 
 
-#line 1157 "y.tab.c"
+#line 1194 "y.tab.c"
 
       default: break;
     }
@@ -1346,7 +1383,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 41 "LexRuler.y"
+#line 57 "LexRuler.y"
 
 
 // programs section
@@ -1354,39 +1391,45 @@ yyreturnlab:
 int yylex()
 {
     int t;
-    while (1) {
+    while(1){
         t = getchar();
-        if (t == ' ' || t == '\t' || t == '\n') {
-            // 忽略空格、制表符和回车
-            continue;
-        } else if (isdigit(t)) {
-            // 识别多位整数
-            int value = t - '0'; // 将第一个数字字符转换为整数
-            while ((t = getchar()) && isdigit(t)) {
-                value = value * 10 + (t - '0'); // 构建多位整数
+        if(t==' '||t=='\t'||t=='\n'){
+            // do nothing
+        }
+        else if(isdigit(t)){
+            yylval = 0;
+            while(isdigit(t)){
+                // 词法单元的值存储在 yylval 中
+                yylval = yylval * 10 + t - '0'; 
+                t = getchar();
             }
-            ungetc(t, stdin); // 将多读的字符放回输入流
-            yylval = value;   // 设置 yylval 以返回整数值
+            // 将刚刚读取的字符 t 推回标准输入流 stdin，以便它可以在后续的解析中被重新使用
+            ungetc(t,stdin);
             return NUMBER;
-        } else if (t == '+') {
+        }
+        else if(t=='+'){
             return ADD;
-        } else if (t == '-') {
+        }
+        else if(t=='-'){
             return MINUS;
-        } else if (t == '*') {
-            // TODO: 识别其他符号
-        } else if (t == '/') {
-            // TODO: 识别其他符号
-        } else if (t == '(') {
-            // TODO: 识别其他符号
-        } else if (t == ')') {
-            // TODO: 识别其他符号
-        } else {
-            return t; // 对于未知字符，返回其 ASCII 值
+        }
+        else if(t=='*'){
+            return MUL;
+        }
+        else if(t=='/'){
+            return DIV;
+        }
+        else if(t=='('){
+            return LEFT_PAREN;
+        }
+        else if(t==')'){
+            return RIGHT_PAREN;
+        }
+        else{
+            return t;
         }
     }
 }
-
-
 
 int main(void)
 {

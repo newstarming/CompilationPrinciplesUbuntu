@@ -67,7 +67,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "LexRuler.y"
+#line 2 "LexRuler.y"
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -570,8 +570,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    24,    24,    25,    26,    29,    31,    33,    35,    37,
-      38,    40
+       0,    25,    25,    26,    27,    30,    32,    34,    36,    38,
+      39,    41
 };
 #endif
 
@@ -1138,54 +1138,54 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* lines: lines expr '\n'  */
-#line 24 "LexRuler.y"
+#line 25 "LexRuler.y"
                        {printf("%s\n",yyvsp[-1]);}
 #line 1144 "y.tab.c"
     break;
 
   case 5: /* expr: expr ADD expr  */
-#line 29 "LexRuler.y"
+#line 30 "LexRuler.y"
                      {yyval=(char*)malloc(50*sizeof(char)); strcpy(yyval,yyvsp[-2]);
                       strcat(yyval,yyvsp[0]);strcat(yyval,"+"); }
 #line 1151 "y.tab.c"
     break;
 
   case 6: /* expr: expr SUB expr  */
-#line 31 "LexRuler.y"
+#line 32 "LexRuler.y"
                      {yyval=(char*)malloc(50*sizeof(char)); strcpy(yyval,yyvsp[-2]);
                       strcat(yyval,yyvsp[0]);strcat(yyval,"-"); }
 #line 1158 "y.tab.c"
     break;
 
   case 7: /* expr: expr MUL expr  */
-#line 33 "LexRuler.y"
+#line 34 "LexRuler.y"
                      {yyval=(char*)malloc(50*sizeof(char)); strcpy(yyval,yyvsp[-2]);
                       strcat(yyval,yyvsp[0]);strcat(yyval,"*"); }
 #line 1165 "y.tab.c"
     break;
 
   case 8: /* expr: expr DIV expr  */
-#line 35 "LexRuler.y"
+#line 36 "LexRuler.y"
                      {yyval=(char*)malloc(50*sizeof(char)); strcpy(yyval,yyvsp[-2]);
                       strcat(yyval,yyvsp[0]);strcat(yyval,"/"); }
 #line 1172 "y.tab.c"
     break;
 
   case 9: /* expr: LKO expr RKO  */
-#line 37 "LexRuler.y"
+#line 38 "LexRuler.y"
                     {yyval=(char*)malloc(50*sizeof(char));strcpy(yyval,yyvsp[-1]);}
 #line 1178 "y.tab.c"
     break;
 
   case 10: /* expr: NUMBER  */
-#line 38 "LexRuler.y"
+#line 39 "LexRuler.y"
                 {yyval = (char*)malloc(50*sizeof(char)); strcpy(yyval,yyvsp[0]);
                  strcat(yyval," ");}
 #line 1185 "y.tab.c"
     break;
 
   case 11: /* expr: ID  */
-#line 40 "LexRuler.y"
+#line 41 "LexRuler.y"
             {yyval=(char*)malloc(50*sizeof(char));
              strcpy(yyval,yyvsp[0]);strcat(yyval," ");}
 #line 1192 "y.tab.c"
@@ -1385,7 +1385,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 44 "LexRuler.y"
+#line 45 "LexRuler.y"
 
 
 
