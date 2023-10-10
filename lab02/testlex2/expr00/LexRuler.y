@@ -1,3 +1,4 @@
+//简单的计算器示例，可以解析和计算基本的数学表达式
 %{
 #include<stdio.h>
 #include<stdlib.h>
@@ -15,7 +16,7 @@ void yyerror(const char* s);
 
 %%
 
-
+// 定义语法规则
 lines   :       lines expr '\n' { printf("%f\n", $2); }
         |       lines '\n'
         |
@@ -26,8 +27,8 @@ expr    :       expr '+' expr   { $$=$1+$3; }
         |       expr '*' expr   { $$=$1*$3; }
         |       expr '/' expr   { $$=$1/$3; }
         |       '('expr')'      { $$=$2;}
-        |       '-' expr %prec UMINUS   {$$=-$2;}
-        |       NUMBER
+        |       '-' expr %prec UMINUS   {$$=-$2;} // 处理负数
+        |       NUMBER // 匹配数字
         ;
     
 NUMBER  :       '0'         {$$=0.0;}
@@ -44,7 +45,7 @@ NUMBER  :       '0'         {$$=0.0;}
 
 %%
 
-// programs section
+// 程序部分
 
 int yylex()
 {
@@ -59,7 +60,9 @@ int main(void)
     }while(!feof(yyin));
     return 0;
 }
+
 void yyerror(const char* s){
     fprintf(stderr,"Parse error: %s\n",s);
     exit(1);
 }
+

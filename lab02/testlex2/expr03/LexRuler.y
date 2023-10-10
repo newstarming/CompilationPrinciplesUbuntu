@@ -1,93 +1,152 @@
 %{
-/*********************************************
-将所有的词法分析功能均放在 yylex 函数内实现，为 +、-、*、\、(、 ) 每个运算符及整数分别定义一个单词类别，在 yylex 内实现代码，能
-识别这些单词，并将单词类别返回给词法分析程序。
-实现功能更强的词法分析程序，可识别并忽略空格、制表符、回车等
-空白符，能识别多位十进制整数。
-YACC file
-**********************************************/
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include<ctype.h>
-#ifndef YYSTYPE
+
+// 定义符号表项结构
+struct Symbol {
+    char name[50];
+    double value;
+};
+
 #define YYSTYPE double
-#endif
+struct Symbol symbol_table[100];  // 符号表
+int symbol_count = 0;  // 符号表中的项数
+char idstr[50];
+char numstr[50];
+
 int yylex();
 extern int yyparse();
 FILE* yyin;
-void yyerror(const char* s);
+void yyerror(const char*s);
 %}
-
-//TODO:给每个符号定义一个单词类别
-%token ADD MINUS
 %token NUMBER
-%left ADD MINUS
-%right UMINUS         
+%token ID
+%token ADD SUB MUL DIV LKO RKO ASSIGN
+%left LKO
+%left ADD SUB
+%left MUL DIV
+%right UMINUS
+%right RKO
+%%
+
+lines : lines expr '\n'{printf("%s\n",$2);}
+      | lines '\n'
+      |
+      ;
+
+expr : expr ADD expr {$$=$1+$3;}
+     | expr SUB expr {$$=$1-$3;}
+     | expr MUL expr {$$=$1*$3;}
+     | expr DIV expr {$$=$1/$3;}
+     | LKO expr RKO {$$=$2;}
+     | NUMBER   {$$ = atof($1);}
+     | ID   {$$ = lookup_variable($1);}  // 查找变量的值
+     ;
+
+stmt : ID ASSIGN expr {assign_variable($1, $3);}  // 赋值语句
 
 %%
 
-
-lines   :       lines expr ';' { printf("%f\n", $2); }
-        |       lines ';'
-        |
-        ;
-//TODO:完善表达式的规则
-expr    :       expr ADD expr   { $$=$1+$3; }
-        |       expr MINUS expr   { $$=$1-$3; }
-        |       MINUS expr %prec UMINUS   {$$=-$2;}
-        |       NUMBER  {$$=$1;}
-        ;
-
-%%
-
-// programs section
-
+// 自定义词法分析器
 int yylex()
 {
     int t;
     while (1) {
         t = getchar();
-        if (t == ' ' || t == '\t' || t == '\n') {
-            // 忽略空格、制表符和回车
-            continue;
-        } else if (isdigit(t)) {
-            // 识别多位整数
-            int value = t - '0'; // 将第一个数字字符转换为整数
-            while ((t = getchar()) && isdigit(t)) {
-                value = value * 10 + (t - '0'); // 构建多位整数
+        if (t == ' ' || t == '\t') ;
+        else if ((t >= '0' && t <= '9')) {
+            int ti = 0;
+            while ((t >= '0' && t <= '9')) {
+                numstr[ti] = t;
+                t = getchar();
+                ti++;
             }
-            ungetc(t, stdin); // 将多读的字符放回输入流
-            yylval = value;   // 设置 yylval 以返回整数值
+            numstr[ti] = '\0';
+            yylval = numstr;
+            ungetc(t, stdin);
             return NUMBER;
-        } else if (t == '+') {
-            return ADD;
-        } else if (t == '-') {
-            return MINUS;
-        } else if (t == '*') {
-            // TODO: 识别其他符号
-        } else if (t == '/') {
-            // TODO: 识别其他符号
-        } else if (t == '(') {
-            // TODO: 识别其他符号
-        } else if (t == ')') {
-            // TODO: 识别其他符号
+        } else if ((t >= 'a' && t <= 'z') || (t >= 'A' && t <= 'Z') || (t == '_')) {
+            int ti = 0;
+            while ((t >= 'a' && t <= 'z') || (t >= 'A' && t <= 'Z')
+                   || (t == '_') || (t >= '0' && t <= '9')) {
+                idstr[ti] = t;
+                ti++;
+                t = getchar();
+            }
+            idstr[ti] = '\0';
+            yylval = idstr;
+            ungetc(t, stdin);
+            return ID;
         } else {
-            return t; // 对于未知字符，返回其 ASCII 值
+            switch (t) {
+                case '+':
+                    return ADD;
+                case '-':
+                    return SUB;
+                case '*':
+                    return MUL;
+                case '/':
+                    return DIV;
+                case '(':
+                    return LKO;
+                case ')':
+                    return RKO;
+                case '=':
+                    return ASSIGN;  // 新增的赋值操作符
+                default:
+                    return t;
+            }
         }
+        return t;
     }
 }
 
+// 查找变量并返回其值
+double lookup_variable(const char *name) {
+    for (int i = 0; i < symbol_count; i++) {
+        if (strcmp(symbol_table[i].name, name) == 0) {
+            return symbol_table[i].value;
+        }
+    }
+    // 如果变量未找到，默认值为0
+    return 0.0;
+}
 
+// 将变量赋值
+void assign_variable(const char *name, double value) {
+    for (int i = 0; i < symbol_count; i++) {
+        if (strcmp(symbol_table[i].name, name) == 0) {
+            symbol_table[i].value = value;
+            return;
+        }
+    }
+    // 如果变量不存在，将其添加到符号表中
+    if (symbol_count < 100) {
+        strcpy(symbol_table[symbol_count].name, name);
+        symbol_table[symbol_count].value = value;
+        symbol_count++;
+    } else {
+        fprintf(stderr, "Symbol table is full. Cannot add more variables.\n");
+        exit(1);
+    }
+}
 
+// 主函数
 int main(void)
 {
-    yyin=stdin;
-    do{
+    yyin = stdin;
+    do {
         yyparse();
-    }while(!feof(yyin));
+    } while (!feof(yyin));
     return 0;
 }
-void yyerror(const char* s){
-    fprintf(stderr,"Parse error: %s\n",s);
+
+// 错误处理函数
+void yyerror(const char *s)
+{
+    fprintf(stderr, "Parse error:%s\n", s);
     exit(1);
 }
+
