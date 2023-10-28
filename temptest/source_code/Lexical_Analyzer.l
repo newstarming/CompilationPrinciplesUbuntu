@@ -34,17 +34,16 @@ DIV \/
 SMALLER \<
 BIGGER \>
 
-digit [0-9]               // 匹配十进制数字
-octal_digit [0-7]         // 匹配八进制数字
-hexadecimal_digit [0-9a-fA-F] // 匹配十六进制数字
-identifier_nondigit [a-zA-Z_] // 匹配标识符的第一个字符，可以是字母或下划线
+digit [0-9]
+octal_digit [0-7]
+hexadecimal_digit [0-9a-fA-F]
+identifier_nondigit [a-zA-Z_]
 
-decimal_const [1-9]{digit}* // 匹配十进制整数常量，以1-9之间的数字开头，后面跟着零个或多个数字
-octal_const (0){octal_digit}* // 匹配八进制整数常量，以0开头，后面跟着零个或多个八进制数字
-hexadecimal_const (0x|0X){hexadecimal_digit}* // 匹配十六进制整数常量，以0x或0X开头，后面跟着零个或多个十六进制数字
+decimal_const [1-9]{digit}*
+octal_const (0){octal_digit}*
+hexadecimal_const (0x|0X){hexadecimal_digit}*
 
 Identifier ({identifier_nondigit})({identifier_nondigit}|{digit})*
-// 匹配标识符，以identifier_nondigit字符开头，后面可以跟随零个或多个identifier_nondigit字符或数字
 
 
 %%
@@ -194,6 +193,7 @@ Identifier ({identifier_nondigit})({identifier_nondigit}|{digit})*
 . {
     addcolumn(1);	// 遇到其他字符，调用 addcolumn 增加列号
     }
+
 [ \t]+ {}	// 忽略空格和制表符
 
 %%
