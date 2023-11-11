@@ -1,0 +1,12 @@
+program
+    FunctionDefine function name: main, type: float()
+        CompoundStmt
+            ConstDeclStmt
+                ConstId	name: a	scope: 2	type: float
+                IntegerLiteral	value: 1.5	type: float
+            ConstDeclStmt
+                ConstId	name: b	scope: 2	type: float
+                IntegerLiteral	value: 2	type: int
+            ConstDeclStmt
+                ConstId	name: c	scope: 2	type: float
+                IntegerLiteral	value: 3	type: int
