@@ -1,4 +1,4 @@
-.PHONY:test,clean
+.PHONY:lex,clean
 lex:
 	bison -d source_code/analysis.y -o source_code/analysis.tab.c
 	flex -o source_code/lex.yy.c source_code/analysis.l 
