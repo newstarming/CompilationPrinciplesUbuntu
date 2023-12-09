@@ -20,11 +20,10 @@ void BasicBlock::insertBack(Instruction *inst)
 void BasicBlock::insertBefore(Instruction *dst, Instruction *src)
 {
     // Todo
-    src->getPrev()->setNext(dst);
     dst->setPrev(src->getPrev());
-
-    dst->setNext(src);
+    src->getPrev()->setNext(dst);
     src->setPrev(dst);
+    dst->setNext(src);
 
     dst->setParent(this);
 }
@@ -72,7 +71,17 @@ void BasicBlock::removePred(BasicBlock *bb)
 {
     pred.erase(std::find(pred.begin(), pred.end(), bb));
 }
-
+void BasicBlock::genMachineCode(AsmBuilder* builder) 
+{
+    auto cur_func = builder->getFunction();
+    auto cur_block = new MachineBlock(cur_func, no);
+    builder->setBlock(cur_block);
+    for (auto i = head->getNext(); i != head; i = i->getNext())
+    {
+        i->genMachineCode(builder);
+    }
+    cur_func->InsertBlock(cur_block);
+}
 BasicBlock::BasicBlock(Function *f)
 {
     this->no = SymbolTable::getLabel();

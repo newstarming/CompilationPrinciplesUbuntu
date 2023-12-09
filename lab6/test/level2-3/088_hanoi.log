@@ -1,0 +1,4 @@
+test/level2-3/088_hanoi.ll:19:1: error: expected instruction opcode
+}
+^
+1 error generated.

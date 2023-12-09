@@ -1,0 +1,4 @@
+test/level2-1/096_side_effect.ll:7:19: error: invalid use of function-local name
+  @a = global i32 %t0, align 4
+                  ^
+1 error generated.

@@ -4,10 +4,8 @@
 #include <vector>
 #include <map>
 #include <set>
-#include <stack>
 #include <algorithm>
 #include <iostream>
-#include "Ast.h"
 #include "BasicBlock.h"
 #include "SymbolTable.h"
 
@@ -25,9 +23,11 @@ private:
     Unit *parent;
 
 public:
+    std::vector<Operand *> params; 
     Function(Unit *, SymbolEntry *);
-    ~Function();
+    //~Function();
     void insertBlock(BasicBlock *bb) { block_list.push_back(bb); };
+    void insertparam(Operand *temp) { params.push_back(temp); };
     BasicBlock *getEntry() { return entry; };
     void remove(BasicBlock *bb);
     void output() const;
@@ -37,6 +37,7 @@ public:
     reverse_iterator rbegin() { return block_list.rbegin(); };
     reverse_iterator rend() { return block_list.rend(); };
     SymbolEntry *getSymPtr() { return sym_ptr; };
+    void genMachineCode(AsmBuilder*);
 };
 
 #endif

@@ -1,7 +1,7 @@
 SRC_PATH ?= src
 INC_PATH += include
 BUILD_PATH ?= build
-TEST_PATH ?= test/level1-2
+TEST_PATH ?= test/*
 OBJ_PATH ?= $(BUILD_PATH)/obj
 BINARY ?= $(BUILD_PATH)/compiler
 SYSLIB_PATH ?= sysyruntimelibrary
@@ -28,7 +28,7 @@ OUTPUT_RES = $(addsuffix .res, $(basename $(TESTCASE)))
 OUTPUT_BIN = $(addsuffix .bin, $(basename $(TESTCASE)))
 OUTPUT_LOG = $(addsuffix .log, $(basename $(TESTCASE)))
 
-.phony:all app run gdb testlab4 testlab5 testlab6 test clean clean-all clean-test clean-app llvmir run1
+.phony:all app run gdb testlab4 testlab5 testlab6 test clean clean-all clean-test clean-app llvmir
 
 all:app
 
@@ -49,13 +49,6 @@ app:$(LEXER) $(PARSER) $(BINARY)
 
 run:app
 	@$(BINARY) -o example.ll -i example.sy
-
-run1:app
-	@$(BINARY) -o example.ll -i example.sy
-	clang example.ll sysyruntimelibrary/sylib.c -o example
-	./example
-	echo $?
-	
 
 gdb:app
 	@gdb $(BINARY)
@@ -149,3 +142,7 @@ clean-test:
 clean-all:clean-test clean-app
 
 clean:clean-all
+
+
+byclang:
+	@clang -S -emit-llvm example.cpp -o madebyclang.ll

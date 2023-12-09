@@ -3,7 +3,7 @@
 #include <vector>
 #include <set>
 #include "Instruction.h"
-
+#include "AsmBuilder.h"
 class Function;
 
 class BasicBlock
@@ -11,7 +11,7 @@ class BasicBlock
     typedef std::vector<BasicBlock *>::iterator bb_iterator;
 
 private:
-    std::vector<BasicBlock *> pred, succ;
+    std::vector<BasicBlock *> pred, succ;//前驱与后继
     Instruction *head;
     Function *parent;
     int no;
@@ -43,6 +43,7 @@ public:
     bb_iterator pred_end() { return pred.end(); };
     int getNumOfPred() const { return pred.size(); };
     int getNumOfSucc() const { return succ.size(); };
+    void genMachineCode(AsmBuilder*);
 };
 
 #endif

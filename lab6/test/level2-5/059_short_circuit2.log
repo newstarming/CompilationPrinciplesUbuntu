@@ -1,0 +1,4 @@
+test/level2-5/059_short_circuit2.ll:22:1: error: expected instruction opcode
+}
+^
+1 error generated.

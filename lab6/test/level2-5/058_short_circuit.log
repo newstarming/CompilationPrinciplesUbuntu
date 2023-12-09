@@ -1,0 +1,4 @@
+test/level2-5/058_short_circuit.ll:37:1: error: expected instruction opcode
+B52:                                    ; preds = %B51, %B53
+^
+1 error generated.

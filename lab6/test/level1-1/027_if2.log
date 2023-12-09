@@ -1,0 +1,4 @@
+test/level1-1/027_if2.ll:18:1: error: expected instruction opcode
+}
+^
+1 error generated.

@@ -1,0 +1,4 @@
+test/level2-3/082_reverse_output.ll:19:1: error: expected instruction opcode
+B19:                                    ; preds = %B12, %B12
+^
+1 error generated.
