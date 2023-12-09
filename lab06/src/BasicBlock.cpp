@@ -20,10 +20,11 @@ void BasicBlock::insertBack(Instruction *inst)
 void BasicBlock::insertBefore(Instruction *dst, Instruction *src)
 {
     // Todo
-    dst->setPrev(src->getPrev());
     src->getPrev()->setNext(dst);
-    src->setPrev(dst);
+    dst->setPrev(src->getPrev());
+
     dst->setNext(src);
+    src->setPrev(dst);
 
     dst->setParent(this);
 }
@@ -37,20 +38,17 @@ void BasicBlock::remove(Instruction *inst)
 
 void BasicBlock::output() const
 {
-    if(!empty())
-    {
-        fprintf(yyout, "B%d:", no);
+    fprintf(yyout, "B%d:", no);
 
-        if (!pred.empty())
-        {
-            fprintf(yyout, "%*c; preds = %%B%d", 32, '\t', pred[0]->getNo());
-            for (auto i = pred.begin() + 1; i != pred.end(); i++)
-                fprintf(yyout, ", %%B%d", (*i)->getNo());
-        }
-        fprintf(yyout, "\n");
-        for (auto i = head->getNext(); i != head; i = i->getNext())
-            i->output();
+    if (!pred.empty())
+    {
+        fprintf(yyout, "%*c; preds = %%B%d", 32, '\t', pred[0]->getNo());
+        for (auto i = pred.begin() + 1; i != pred.end(); i++)
+            fprintf(yyout, ", %%B%d", (*i)->getNo());
     }
+    fprintf(yyout, "\n");
+    for (auto i = head->getNext(); i != head; i = i->getNext())
+        i->output();
 }
 
 void BasicBlock::addSucc(BasicBlock *bb)
